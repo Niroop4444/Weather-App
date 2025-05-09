@@ -7,6 +7,7 @@ import 'package:weather/repositories/weather_repository.dart';
 import 'package:weather/repositories/weather_repository_implementation.dart';
 import 'package:weather/utils/constants/text_constants.dart';
 import 'package:weather/view_models/search_city_weather_view_model.dart';
+import 'package:weather/view_models/searched_city_weather_view_model.dart';
 import 'package:weather/view_models/weather_view_model.dart';
 
 final dioProvider = Provider((ref) => Dio());
@@ -31,8 +32,12 @@ final weatherViewModelProvider = StateNotifierProvider<WeatherViewModel, Weather
   return WeatherViewModel(ref.watch(weatherRepositoryProvider));
 });
 
-final searchWeatherViewModelProvider = StateNotifierProvider<SearchCityWeatherViewModel, SearchCityWeatherState>(
+final searchWeatherViewModelProvider = StateNotifierProvider<SearchCityWeatherViewModel, SearchCityWeatherState>((ref) {
+  return SearchCityWeatherViewModel(ref.watch(weatherRepositoryProvider));
+});
+
+final searchedWeatherViewModelProvider = StateNotifierProvider<SearchedCityWeatherViewModel, SearchedCityWeatherState>(
   (ref) {
-    return SearchCityWeatherViewModel(ref.watch(weatherRepositoryProvider));
+    return SearchedCityWeatherViewModel(ref.watch(weatherRepositoryProvider));
   },
 );

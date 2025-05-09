@@ -41,6 +41,12 @@ class WeatherModel extends HiveObject {
   @HiveField(11)
   final double feelsLike;
 
+  @HiveField(12)
+  final double lat;
+
+  @HiveField(13)
+  final double lon;
+
   WeatherModel({
     required this.id,
     required this.cityName,
@@ -54,6 +60,8 @@ class WeatherModel extends HiveObject {
     required this.sunrise,
     required this.sunset,
     required this.feelsLike,
+    required this.lat,
+    required this.lon
   });
 
   factory WeatherModel.fromJson(Map<String, dynamic> json) {
@@ -69,7 +77,28 @@ class WeatherModel extends HiveObject {
         windSpeed: (json['wind']['speed'] as num).toDouble(),
         sunrise: (json['sys']['sunrise']).toString(),
         sunset: (json['sys']['sunset']).toString(),
-        feelsLike: (json['main']['feels_like'] as num).toDouble()
+        feelsLike: (json['main']['feels_like'] as num).toDouble(),
+        lat: (json['coord']['lat'] as num).toDouble(),
+      lon: (json['coord']['lon'] as num).toDouble(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'cityName': cityName,
+      'temperature': temperature,
+      'description': description,
+      'humidity': humidity,
+      'timeStamp': timeStamp.toIso8601String(),
+      'minTemp': minTemp,
+      'maxTemp': maxTemp,
+      'windSpeed': windSpeed,
+      'sunrise': sunrise,
+      'sunset': sunset,
+      'feelsLike': feelsLike,
+      'lat': lat,
+      'lon': lon,
+    };
   }
 }

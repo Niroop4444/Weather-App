@@ -15,9 +15,7 @@ class SearchScreen extends ConsumerWidget {
     final searchedWeatherState = ref.watch(searchWeatherViewModelProvider);
 
     return Scaffold(
-      appBar: AppBar(
-
-      ),
+      appBar: AppBar(),
       body: Form(
         key: formKey,
         child: Column(

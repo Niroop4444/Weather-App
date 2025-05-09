@@ -143,4 +143,41 @@ class WeatherRepositoryImplementation implements WeatherRepository {
       }
     }
   }
+
+  @override
+  Future<HourlyWeatherModel> getHourlyWeatherDetailsOfSearchedLocation(double lat, double lon) async {
+    try {
+      final response = await dio.get(
+        AppTextConstants.currentLocationHourlyForecastUrl,
+        queryParameters: {
+          'lat': lat,
+          'lon': lon,
+          'appid': apiKey,
+          'units': AppTextConstants.metric,
+        },
+      );
+      return HourlyWeatherModel.fromJson(response.data);
+    } catch (e) {
+      throw Exception('${AppTextConstants.currentLocationHourlyException} : $e');
+    }
+  }
+
+  @override
+  Future<WeeklyWeatherModel> getWeeklyWeatherOfSearchedLocation(double lat, double lon) async {
+    try {
+      final response = await dio.get(
+        AppTextConstants.currentLocationWeeklyWeatherUrl,
+        queryParameters: {
+          'current': '',
+          'daily': '${AppTextConstants.weatherCode},${AppTextConstants.maxTemp},${AppTextConstants.minTemp}',
+          'timezone': AppTextConstants.auto,
+          'latitude': lat,
+          'longitude': lon,
+        },
+      );
+      return WeeklyWeatherModel.fromJson(response.data);
+    } catch (e) {
+      throw Exception('${AppTextConstants.currentLocationHourlyException} : $e');
+    }
+  }
 }

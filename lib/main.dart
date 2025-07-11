@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:weather/models/weather_model.dart';
 import 'package:weather/providers/weather_provider.dart';
 import 'package:weather/utils/theme/theme.dart';
-import 'package:weather/view/screens/search_screen.dart';
 import 'package:weather/view/screens/weather_screen.dart';
 
 void main() async {

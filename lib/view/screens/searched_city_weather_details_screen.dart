@@ -10,7 +10,7 @@ import 'package:weather/view/widgets/weekly_weather.dart';
 class SearchedCityWeatherDetailsScreen extends ConsumerStatefulWidget {
   final WeatherModel weather;
 
-  SearchedCityWeatherDetailsScreen({super.key, required this.weather});
+  const SearchedCityWeatherDetailsScreen({super.key, required this.weather});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _SearchedCityWeatherDetailsScreen();

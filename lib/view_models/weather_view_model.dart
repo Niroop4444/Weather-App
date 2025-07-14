@@ -3,24 +3,19 @@ import 'package:weather/models/hourly_weather_model.dart';
 import 'package:weather/models/weather_model.dart';
 import 'package:weather/models/weekly_weather_model.dart';
 import 'package:weather/repositories/weather_repository.dart';
-import 'package:weather/utils/constants/text_constants.dart';
 
 class WeatherState {
   WeatherModel? currentLocationWeather;
   HourlyWeatherModel? hourlyWeather;
   WeeklyWeatherModel? weeklyWeather;
-  final bool isLoadingCurrent;
-  final bool isLoadingHourly;
-  final bool isLoadingWeekly;
+  final bool isLoading;
   final String? error;
 
   WeatherState({
     this.currentLocationWeather,
     this.hourlyWeather,
     this.weeklyWeather,
-    this.isLoadingCurrent = false,
-    this.isLoadingHourly = false,
-    this.isLoadingWeekly = false,
+    this.isLoading = false,
     this.error,
   });
 
@@ -28,18 +23,14 @@ class WeatherState {
     WeatherModel? currentLocationWeather,
     HourlyWeatherModel? hourlyWeather,
     WeeklyWeatherModel? weeklyWeather,
-    bool? isLoadingCurrent,
-    bool? isLoadingHourly,
-    bool? isLoadingWeekly,
+    bool? isLoading,
     String? error,
   }) {
     return WeatherState(
       currentLocationWeather: currentLocationWeather ?? this.currentLocationWeather,
       hourlyWeather: hourlyWeather ?? this.hourlyWeather,
       weeklyWeather: weeklyWeather ?? this.weeklyWeather,
-      isLoadingCurrent: isLoadingCurrent ?? this.isLoadingCurrent,
-      isLoadingHourly: isLoadingHourly ?? this.isLoadingHourly,
-      isLoadingWeekly: isLoadingWeekly ?? this.isLoadingWeekly,
+      isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
     );
   }
@@ -48,35 +39,23 @@ class WeatherState {
 class WeatherViewModel extends StateNotifier<WeatherState> {
   final WeatherRepository _repository;
 
-  WeatherViewModel(this._repository) : super(WeatherState());
-
-  Future<void> fetchCurrentWeather() async {
-    state = state.copyWith(isLoadingCurrent: true);
-    try {
-      final weather = await _repository.getWeatherDetailsOfCurrentLocation();
-      state = state.copyWith(currentLocationWeather: weather, isLoadingCurrent: false);
-    } catch (e) {
-      state = state.copyWith(isLoadingCurrent: false, error: '${AppTextConstants.currentLocationException}: $e');
-    }
+  WeatherViewModel(this._repository) : super(WeatherState()) {
+    fetchAllWeather();
   }
 
-  Future<void> fetchHourlyWeather() async {
-    state = state.copyWith(isLoadingHourly: true);
+  Future<void> fetchAllWeather() async {
+    state = state.copyWith(isLoading: true, error: null);
     try {
-      final hourly = await _repository.getHourlyWeatherDetailsOfCurrentLocation();
-      state = state.copyWith(hourlyWeather: hourly, isLoadingHourly: false);
+      final position = await _repository.getCurrentPosition();
+      final (weather, hourly, weekly) = await _repository.getAllWeatherData(position);
+      state = state.copyWith(
+        currentLocationWeather: weather,
+        hourlyWeather: hourly,
+        weeklyWeather: weekly,
+        isLoading: false,
+      );
     } catch (e) {
-      state = state.copyWith(isLoadingHourly: false, error: '${AppTextConstants.currentLocationHourlyException}: $e');
-    }
-  }
-
-  Future<void> fetchWeeklyWeather() async {
-    state = state.copyWith(isLoadingWeekly: true);
-    try {
-      final weekly = await _repository.getWeeklyWeatherOfCurrentLocation();
-      state = state.copyWith(weeklyWeather: weekly, isLoadingWeekly: false);
-    } catch (e) {
-      state = state.copyWith(isLoadingWeekly: false, error: '${AppTextConstants.currentLocationWeeklyException}: $e');
+      state = state.copyWith(isLoading: false, error: 'Failed to fetch weather data: $e');
     }
   }
 }

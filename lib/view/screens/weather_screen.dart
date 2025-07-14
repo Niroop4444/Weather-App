@@ -16,22 +16,8 @@ class WeatherScreen extends ConsumerStatefulWidget {
 }
 
 class _WeatherScreenState extends ConsumerState<WeatherScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final notifier = ref.read(weatherViewModelProvider.notifier);
-      notifier.fetchCurrentWeather();
-      notifier.fetchHourlyWeather();
-      notifier.fetchWeeklyWeather();
-    });
-  }
-
   Future<void> _refreshWeather() async {
-    final notifier = ref.read(weatherViewModelProvider.notifier);
-    notifier.fetchCurrentWeather();
-    notifier.fetchHourlyWeather();
-    notifier.fetchWeeklyWeather();
+    await ref.read(weatherViewModelProvider.notifier).fetchAllWeather();
   }
 
   @override
@@ -55,19 +41,24 @@ class _WeatherScreenState extends ConsumerState<WeatherScreen> {
           physics: AlwaysScrollableScrollPhysics(),
           children: [
             if (weatherState.error != null)
-              Text(
-                weatherState.error!,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.error),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  weatherState.error!,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.error),
+                ),
               ),
-
-            if (weatherState.isLoadingCurrent || weatherState.isLoadingHourly || weatherState.isLoadingWeekly)
-              WeatherLoader(),
-            if (weatherState.currentLocationWeather != null)
-              CurrentWeather(weatherModel: weatherState.currentLocationWeather!),
-            if (weatherState.hourlyWeather != null)
-              HourlyWeather(hourlyWeatherModel: weatherState.hourlyWeather!),
-            if (weatherState.weeklyWeather != null)
-              WeeklyWeather(weeklyWeatherModel: weatherState.weeklyWeather!),
+            if (weatherState.isLoading)
+              WeatherLoader()
+            else ...[
+              if (weatherState.currentLocationWeather != null)
+                CurrentWeather(weatherModel: weatherState.currentLocationWeather!),
+              if (weatherState.hourlyWeather != null)
+                HourlyWeather(hourlyWeatherModel: weatherState.hourlyWeather!),
+              if (weatherState.weeklyWeather != null)
+                WeeklyWeather(weeklyWeatherModel: weatherState.weeklyWeather!),
+            ]
           ],
         ),
       ),

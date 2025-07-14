@@ -20,10 +20,10 @@ class WeeklyWeatherModel {
   final String timezoneAbbreviation;
 
   @HiveField(5)
-  final CurrentUnits currentUnits;
+  final CurrentUnits? currentUnits;
 
   @HiveField(6)
-  final Current current;
+  final Current? current;
 
   @HiveField(7)
   final DailyUnits dailyUnits;
@@ -37,8 +37,8 @@ class WeeklyWeatherModel {
     required this.elevation,
     required this.timezone,
     required this.timezoneAbbreviation,
-    required this.currentUnits,
-    required this.current,
+    this.currentUnits,
+    this.current,
     required this.dailyUnits,
     required this.daily,
   });
@@ -50,8 +50,11 @@ class WeeklyWeatherModel {
       elevation: json['elevation'],
       timezone: json['timezone'],
       timezoneAbbreviation: json['timezone_abbreviation'],
-      currentUnits: CurrentUnits.fromJson(json['current_units']),
-      current: Current.fromJson(json['current']),
+      currentUnits: json['current_units'] != null
+          ? CurrentUnits.fromJson(json['current_units'])
+          : null,
+      current:
+          json['current'] != null ? Current.fromJson(json['current']) : null,
       dailyUnits: DailyUnits.fromJson(json['daily_units']),
       daily: Daily.fromJson(json['daily']),
     );
@@ -64,8 +67,8 @@ class WeeklyWeatherModel {
       'elevation': elevation,
       'timezone': timezone,
       'timezone_abbreviation': timezoneAbbreviation,
-      'current_units': currentUnits.toJson(),
-      'current': current.toJson(),
+      'current_units': currentUnits?.toJson(),
+      'current': current?.toJson(),
       'daily_units': dailyUnits.toJson(),
       'daily': daily.toJson(),
     };

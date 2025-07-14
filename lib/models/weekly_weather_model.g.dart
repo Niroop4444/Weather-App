@@ -22,8 +22,8 @@ class WeeklyWeatherModelAdapter extends TypeAdapter<WeeklyWeatherModel> {
       elevation: fields[2] as double,
       timezone: fields[3] as String,
       timezoneAbbreviation: fields[4] as String,
-      currentUnits: fields[5] as CurrentUnits,
-      current: fields[6] as Current,
+      currentUnits: fields[5] as CurrentUnits?,
+      current: fields[6] as Current?,
       dailyUnits: fields[7] as DailyUnits,
       daily: fields[8] as Daily,
     );

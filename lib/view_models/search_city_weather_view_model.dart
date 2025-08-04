@@ -42,6 +42,7 @@ class SearchCityWeatherViewModel extends StateNotifier<SearchCityWeatherState> {
       final weatherData = await _repository.getWeatherForCity(city);
       await _repository.saveWeatherData(weatherData);
       await loadRecentCityWeather();
+      state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: '${AppTextConstants.selectedLocationException} $city');
     }

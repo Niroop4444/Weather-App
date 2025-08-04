@@ -12,12 +12,9 @@ class WeatherRepositoryImplementation implements WeatherRepository {
   final Box<WeatherModel> weatherBox;
   final String apiKey;
 
-  WeatherRepositoryImplementation({
-    required this.dio,
-    required this.weatherBox,
-    required this.apiKey,
-  });
+  WeatherRepositoryImplementation({required this.dio, required this.weatherBox, required this.apiKey});
 
+  @override
   Future<Position> getCurrentPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -39,14 +36,11 @@ class WeatherRepositoryImplementation implements WeatherRepository {
       throw Exception(AppTextConstants.locationPermissionsPermanentlyDenied);
     }
 
-    return await Geolocator.getCurrentPosition(
-      locationSettings: LocationSettings(accuracy: LocationAccuracy.best),
-    );
+    return await Geolocator.getCurrentPosition(locationSettings: LocationSettings(accuracy: LocationAccuracy.best));
   }
 
   @override
-  Future<(WeatherModel, HourlyWeatherModel, WeeklyWeatherModel)>
-  getAllWeatherData(Position position) async {
+  Future<(WeatherModel, HourlyWeatherModel, WeeklyWeatherModel)> getAllWeatherData(Position position) async {
     if (apiKey == "API_KEY" || apiKey.isEmpty) {
       throw Exception(AppTextConstants.apiKeyMissing);
     }
@@ -78,8 +72,7 @@ class WeatherRepositoryImplementation implements WeatherRepository {
           queryParameters: {
             'latitude': position.latitude,
             'longitude': position.longitude,
-            'daily':
-                '${AppTextConstants.weatherCode},${AppTextConstants.maxTemp},${AppTextConstants.minTemp}',
+            'daily': '${AppTextConstants.weatherCode},${AppTextConstants.maxTemp},${AppTextConstants.minTemp}',
             'timezone': AppTextConstants.auto,
           },
         ),
@@ -107,11 +100,7 @@ class WeatherRepositoryImplementation implements WeatherRepository {
     try {
       final response = await dio.get(
         AppTextConstants.currentLocationWeatherUrl,
-        queryParameters: {
-          'q': city,
-          'appid': apiKey,
-          'units': AppTextConstants.metric,
-        },
+        queryParameters: {'q': city, 'appid': apiKey, 'units': AppTextConstants.metric},
       );
       return WeatherModel.fromJson(response.data);
     } catch (e) {
@@ -124,9 +113,7 @@ class WeatherRepositoryImplementation implements WeatherRepository {
     WeatherModel? existingWeatherData;
 
     try {
-      existingWeatherData = weatherBox.values.firstWhere(
-        (element) => element.cityName == weather.cityName,
-      );
+      existingWeatherData = weatherBox.values.firstWhere((element) => element.cityName == weather.cityName);
     } catch (e) {
       existingWeatherData = null;
     }
@@ -137,50 +124,37 @@ class WeatherRepositoryImplementation implements WeatherRepository {
 
     await weatherBox.add(weather);
 
-    final allWeather = await getRecentWeatherData();
-
-    if (allWeather.length > 4) {
-      for (var i = 4; i < allWeather.length; i++) {
-        allWeather[i].delete();
-      }
+    if (weatherBox.length > 4) {
+      final sortedKeys = weatherBox.keys.toList(growable: false)..sort((k1, k2) {
+        final w1 = weatherBox.get(k1);
+        final w2 = weatherBox.get(k2);
+        return w1!.timeStamp.compareTo(w2!.timeStamp);
+      });
+      weatherBox.delete(sortedKeys.first);
     }
   }
 
   @override
-  Future<HourlyWeatherModel> getHourlyWeatherDetailsOfSearchedLocation(
-    double lat,
-    double lon,
-  ) async {
+  Future<HourlyWeatherModel> getHourlyWeatherDetailsOfSearchedLocation(double lat, double lon) async {
     try {
       final response = await dio.get(
         AppTextConstants.currentLocationHourlyForecastUrl,
-        queryParameters: {
-          'lat': lat,
-          'lon': lon,
-          'appid': apiKey,
-          'units': AppTextConstants.metric,
-        },
+        queryParameters: {'lat': lat, 'lon': lon, 'appid': apiKey, 'units': AppTextConstants.metric},
       );
       return HourlyWeatherModel.fromJson(response.data);
     } catch (e) {
-      throw Exception(
-        '${AppTextConstants.currentLocationHourlyException} : $e',
-      );
+      throw Exception('${AppTextConstants.currentLocationHourlyException} : $e');
     }
   }
 
   @override
-  Future<WeeklyWeatherModel> getWeeklyWeatherOfSearchedLocation(
-    double lat,
-    double lon,
-  ) async {
+  Future<WeeklyWeatherModel> getWeeklyWeatherOfSearchedLocation(double lat, double lon) async {
     try {
       final response = await dio.get(
         AppTextConstants.currentLocationWeeklyWeatherUrl,
         queryParameters: {
           'current': '',
-          'daily':
-              '${AppTextConstants.weatherCode},${AppTextConstants.maxTemp},${AppTextConstants.minTemp}',
+          'daily': '${AppTextConstants.weatherCode},${AppTextConstants.maxTemp},${AppTextConstants.minTemp}',
           'timezone': AppTextConstants.auto,
           'latitude': lat,
           'longitude': lon,
@@ -188,9 +162,7 @@ class WeatherRepositoryImplementation implements WeatherRepository {
       );
       return WeeklyWeatherModel.fromJson(response.data);
     } catch (e) {
-      throw Exception(
-        '${AppTextConstants.currentLocationWeeklyException} : $e',
-      );
+      throw Exception('${AppTextConstants.currentLocationWeeklyException} : $e');
     }
   }
 }

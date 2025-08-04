@@ -4,7 +4,6 @@ part 'weather_model.g.dart';
 
 @HiveType(typeId: 0)
 class WeatherModel extends HiveObject {
-
   @HiveField(0)
   final int id;
 
@@ -61,24 +60,30 @@ class WeatherModel extends HiveObject {
     required this.sunset,
     required this.feelsLike,
     required this.lat,
-    required this.lon
+    required this.lon,
   });
 
   factory WeatherModel.fromJson(Map<String, dynamic> json) {
     return WeatherModel(
-        id: json['weather'][0]['id'],
-        cityName: json['name'],
-        temperature: (json['main']['temp'] as num).toDouble(),
-        description: json['weather'][0]['description'],
-        humidity: (json['main']['humidity'] as num).toDouble(),
-        timeStamp: DateTime.now(),
-        minTemp: (json['main']['temp_min'] as num).toDouble(),
-        maxTemp: (json['main']['temp_max'] as num).toDouble(),
-        windSpeed: (json['wind']['speed'] as num).toDouble(),
-        sunrise: (json['sys']['sunrise']).toString(),
-        sunset: (json['sys']['sunset']).toString(),
-        feelsLike: (json['main']['feels_like'] as num).toDouble(),
-        lat: (json['coord']['lat'] as num).toDouble(),
+      id: json['weather'][0]['id'],
+      cityName: json['name'],
+      temperature: (json['main']['temp'] as num).toDouble(),
+      description: json['weather'][0]['description'],
+      humidity: (json['main']['humidity'] as num).toDouble(),
+      timeStamp: DateTime.now(),
+      minTemp: (json['main']['temp_min'] as num).toDouble(),
+      maxTemp: (json['main']['temp_max'] as num).toDouble(),
+      windSpeed: (json['wind']['speed'] as num).toDouble(),
+      sunrise:
+          DateTime.fromMillisecondsSinceEpoch(
+            json['sys']['sunrise'] * 1000,
+          ).toString(),
+      sunset:
+          DateTime.fromMillisecondsSinceEpoch(
+            json['sys']['sunset'] * 1000,
+          ).toString(),
+      feelsLike: (json['main']['feels_like'] as num).toDouble(),
+      lat: (json['coord']['lat'] as num).toDouble(),
       lon: (json['coord']['lon'] as num).toDouble(),
     );
   }

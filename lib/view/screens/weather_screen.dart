@@ -17,7 +17,7 @@ class WeatherScreen extends ConsumerStatefulWidget {
 
 class _WeatherScreenState extends ConsumerState<WeatherScreen> {
   Future<void> _refreshWeather() async {
-    await ref.read(weatherViewModelProvider.notifier).fetchAllWeather();
+    await ref.read(weatherViewModelProvider.notifier).fetchAllWeather(isRefresh: true);
   }
 
   @override
@@ -49,7 +49,7 @@ class _WeatherScreenState extends ConsumerState<WeatherScreen> {
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.error),
                 ),
               ),
-            if (weatherState.isLoading)
+            if (weatherState.isLoading && !weatherState.isRefreshing)
               WeatherLoader()
             else ...[
               if (weatherState.currentLocationWeather != null)

@@ -17,7 +17,6 @@ class SearchedCityWeatherDetailsScreen extends ConsumerStatefulWidget {
 }
 
 class _SearchedCityWeatherDetailsScreen extends ConsumerState<SearchedCityWeatherDetailsScreen> {
-
   @override
   void initState() {
     super.initState();

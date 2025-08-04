@@ -9,6 +9,7 @@ class WeatherState {
   HourlyWeatherModel? hourlyWeather;
   WeeklyWeatherModel? weeklyWeather;
   final bool isLoading;
+  final bool isRefreshing;
   final String? error;
 
   WeatherState({
@@ -16,6 +17,7 @@ class WeatherState {
     this.hourlyWeather,
     this.weeklyWeather,
     this.isLoading = false,
+    this.isRefreshing = false,
     this.error,
   });
 
@@ -24,6 +26,7 @@ class WeatherState {
     HourlyWeatherModel? hourlyWeather,
     WeeklyWeatherModel? weeklyWeather,
     bool? isLoading,
+    bool? isRefreshing,
     String? error,
   }) {
     return WeatherState(
@@ -31,6 +34,7 @@ class WeatherState {
       hourlyWeather: hourlyWeather ?? this.hourlyWeather,
       weeklyWeather: weeklyWeather ?? this.weeklyWeather,
       isLoading: isLoading ?? this.isLoading,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
       error: error ?? this.error,
     );
   }
@@ -43,8 +47,12 @@ class WeatherViewModel extends StateNotifier<WeatherState> {
     fetchAllWeather();
   }
 
-  Future<void> fetchAllWeather() async {
-    state = state.copyWith(isLoading: true, error: null);
+  Future<void> fetchAllWeather({bool isRefresh = false}) async {
+    if (isRefresh) {
+      state = state.copyWith(isRefreshing: true, error: null);
+    } else {
+      state = state.copyWith(isLoading: true, error: null);
+    }
     try {
       final position = await _repository.getCurrentPosition();
       final (weather, hourly, weekly) = await _repository.getAllWeatherData(position);
@@ -56,7 +64,7 @@ class WeatherViewModel extends StateNotifier<WeatherState> {
         error: null,
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: 'Failed to fetch weather data: $e');
+      state = state.copyWith(isLoading: false, error: 'Failed to fetch weather data: $e', isRefreshing: false);
     }
   }
 }

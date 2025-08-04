@@ -36,48 +36,32 @@ class SearchedCityWeatherState {
   }
 }
 
-class SearchedCityWeatherViewModel
-    extends StateNotifier<SearchedCityWeatherState> {
+class SearchedCityWeatherViewModel extends StateNotifier<SearchedCityWeatherState> {
   final WeatherRepository _repository;
 
-  SearchedCityWeatherViewModel(this._repository)
-    : super(SearchedCityWeatherState());
+  SearchedCityWeatherViewModel(this._repository) : super(SearchedCityWeatherState());
 
   Future<void> fetchHourlyWeather(double lat, double lon) async {
-    state = state.copyWith(isLoadingHourly: true);
+    if (state.hourlyWeather == null) {
+      state = state.copyWith(isLoadingHourly: true);
+    }
     try {
-      final hourly = await _repository
-          .getHourlyWeatherDetailsOfSearchedLocation(lat, lon);
-      state = state.copyWith(
-        hourlyWeather: hourly,
-        isLoadingHourly: false,
-        error: null,
-      );
+      final hourly = await _repository.getHourlyWeatherDetailsOfSearchedLocation(lat, lon);
+      state = state.copyWith(hourlyWeather: hourly, isLoadingHourly: false, error: null);
     } catch (e) {
-      state = state.copyWith(
-        isLoadingHourly: false,
-        error: '${AppTextConstants.currentLocationHourlyException}: $e',
-      );
+      state = state.copyWith(isLoadingHourly: false, error: '${AppTextConstants.currentLocationHourlyException}: $e');
     }
   }
 
   Future<void> fetchWeeklyWeather(double lat, double lon) async {
-    state = state.copyWith(isLoadingWeekly: true);
+    if (state.weeklyWeather == null) {
+      state = state.copyWith(isLoadingWeekly: true);
+    }
     try {
-      final weekly = await _repository.getWeeklyWeatherOfSearchedLocation(
-        lat,
-        lon,
-      );
-      state = state.copyWith(
-        weeklyWeather: weekly,
-        isLoadingWeekly: false,
-        error: null,
-      );
+      final weekly = await _repository.getWeeklyWeatherOfSearchedLocation(lat, lon);
+      state = state.copyWith(weeklyWeather: weekly, isLoadingWeekly: false, error: null);
     } catch (e) {
-      state = state.copyWith(
-        isLoadingWeekly: false,
-        error: '${AppTextConstants.currentLocationWeeklyException}: $e',
-      );
+      state = state.copyWith(isLoadingWeekly: false, error: '${AppTextConstants.currentLocationWeeklyException}: $e');
     }
   }
 }

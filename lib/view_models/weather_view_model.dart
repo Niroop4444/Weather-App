@@ -44,7 +44,7 @@ class WeatherViewModel extends StateNotifier<WeatherState> {
   }
 
   Future<void> fetchAllWeather() async {
-    state = state.copyWith(isLoading: true, error: null);
+    // state = state.copyWith(isLoading: true, error: null);
     try {
       final position = await _repository.getCurrentPosition();
       final (weather, hourly, weekly) = await _repository.getAllWeatherData(position);
